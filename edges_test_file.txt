@@ -1,0 +1,12 @@
+IFS=$'\n' # make new lines the only separator
+
+echo -e "Find lines containing edges in test files\n"
+
+# ! Should update so any file can be used as argument
+for line in $(cat data/Spruce_fingerprint_2017-03-10_16.48_head_50_rm_col.olp.m4)
+	do
+		echo "$line"
+done
+
+# Misc material
+#$(find . -name "*.txt")
