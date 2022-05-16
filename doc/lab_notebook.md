@@ -22,14 +22,13 @@ Interpretation of "fp.3.Luci_01A01.ctg.ctg7180000038386 fp.3.Luci_02C06.ctg.ctg7
 - We note that 7893-6835=1058, which makes sense since overlap length should be the same in both cotings. //correction: may differ slightly "due to length differences"//
 - It is written "If two DNA segments have long and significant similarity at their ends, then we create an edge between their corresponding vertice"
 - We have 1058>1000 but overlap does not take place at end of first coting so no edge. //correction: that is not relevant here, enough that overlap "has length at least 1000 in both sequences"//
-- We will write a shell script called "edges_test_file.txt" which lists lines in input data which are edges ("each line is a potential edge") in output file
+- We will write a shell script called "edges_test_file.txt" which lists lines in input data which are edges ("each line is a potential edge") in output file  //correction not useful//
 - First version "find_edges.txt" written (now just possible to loop the lines)
 
-Note: Regarding translating the identifiers into integers, I will be able to check if correct method was used since it should be 11393435 (unique) contings in the data.
-
 #### 220514
+//Correction: Below not relevant//
 - Finished "find_edges.txt". It takes two arguments input_file and (name) of output_file e.g. "data/output.txt". The input file shuld have columns as "data/Spruce_fingerprint_2017-03-10_16.48_head_50_rm_col.olp.m4"
-- Running `bash find_edges.txt data/Spruce_fingerprint_2017-03-10_16.48_head_50_rm_col.olp.m4 data/Spruce_fingerprint_2017-03-10_16.48_head_50_rm_col_edges.olp.m4` gives a file with 5 edges //correction not relevant due to yesterday corrections//
+- Running `bash find_edges.txt data/Spruce_fingerprint_2017-03-10_16.48_head_50_rm_col.olp.m4 data/Spruce_fingerprint_2017-03-10_16.48_head_50_rm_col_edges.olp.m4` gives a file with 5 edges
 - A version of "find_edges.txt" called "count_edges" returns number of edges in "edges in data/Spruce_fingerprint_2017-03-10_16.48.olp.m4".
 - But `bash count_edges.txt` takes too long to run (no result after approx. 3 hours). So will need another method.
 
@@ -45,20 +44,34 @@ Identify unique contings
 - step 1) `awk '{print $1}' data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 > data/col1.olp.m4`
 - step 2) `awk '{print $2}' data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 > data/col2.olp.m4`
 - step 3) `mv data/col1.olp.m4 data/identifiers.olp.m4`
-- step 4) `data/col2.olp.m4 >> data/identifiers.olp.m4`
-- step 5) `cat data/identifiers.olp.m4 | sort | uniq > cat data/identifiers.olp.m4`
+- step 4) `cat data/col2.olp.m4 >> data/identifiers.olp.m4`
+- ckeck) `cat data/identifiers.olp.m4 | sort | uniq | wc -l # gives 11393435 as expected`
+- step 5) `cat data/identifiers.olp.m4 | sort | uniq > data/identifiers.olp.m4`//
 
+//Correction below not working or relevant//
 Idea: Replace cotings with integers by looping through "data/identifiers.olp.m4" and for each line:
 `cat data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 | tr line id > data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4; id += 1` 
-
 Above steps and replacement might also be included in shell script. Maybe last step is to slow because of `cat`.
 Found `sed -i '/old text/ s//new text/g' gigantic_file.sql` om stack exchange which might be useful for large file.
 
+#### 220516
+- We conjungture that the graph is sparse and therefore a adjacency list might be apropriate for storage.
+- Above shell scripts for finding number of edges ineffcient (probably due to "print"). We instead use
+- `awk '($4 - $3 > 999) && ($7 - $6 > 999)' data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 | wc -l # Number edges is 63 962 895`
+- Conclude that share of potential edges which are actual edges are 63 962 895 / 64 056 772 = 99.85%.
+
+The following adds line number to each (unique) identifier which corresponds to translating string identifiers into integers
+- To add `nl data/identifiers.olp.m4 > data/identifiers_id.olp.m4`
+
+But problem remains to "replace" the strings in the data with the line numbers from above. Tried with no success
+- `awk 'NR==FNR{a[$2]=$1;next}{$1=a[$1]}1' data/identifiers_id.olp.m4 data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4
+
 #### To do list
-- (220512) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
+- (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
 - (220513) Would be nice to create some plots showing (parts of) the graph. It was previously recommended to use Gephi, so maybe come back to that.
 - (220514) "find_edges.txt" produces annoying empty line in end of file. Maybe fix that later. //Not relevant anymore due to corrections 220513//
 - (220515) Put steps in shell script
+- (220516) Need to justify sparsity conjuncture.
  
 #### Misc notes
 - To store edges and verticies some options are: adjacency list, adjacency matrix. Will consider sparseness to decide which type to store in.
