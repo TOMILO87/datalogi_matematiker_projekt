@@ -63,7 +63,7 @@ Found `sed -i '/old text/ s//new text/g' gigantic_file.sql` om stack exchange wh
 The following adds line number to each (unique) identifier which corresponds to translating string identifiers into integers
 - To add `nl data/identifiers.olp.m4 > data/identifiers_id.olp.m4`
 
-But problem remains to "replace" the strings in the data with the line numbers from above. Tried with no success
+But problem remains to "replace" the strings in the data with the line numbers from above. Tried with no success (based on https://stackoverflow.com/a/22253586/5733571)
 - `awk 'NR==FNR{a[$2]=$1;next}{$1=a[$1]}1' data/identifiers_id.olp.m4 data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4`
 
 #### 220517
@@ -72,7 +72,12 @@ The following script (from yesterday) was actually useful, but when doing tests 
 - Converting from Windows-style to UNIX-style line endings: https://support.nesi.org.nz/hc/en-gb/articles/218032857-Converting-from-Windows-style-to-UNIX-style-line-endings
 
 #### 220518
-In the shell script "convert_data_to_edges_integer_format.txt" we include all command necessary to to convert raw data into file with only two columns representing edges.
+In the shell script "convert_data_to_edges_integer_format.txt" we include all commands necessary to to convert raw data into file with only two columns representing edges, where all values are integers identifying nodes. The resulting file is called "data/edges_processed.olp.m4"
+
+We next create a smaller dataset with 10000 elements based on "data/edges_processed.olp.m4".
+- `head -10000 data/edges_processed.olp.m4 > data/edges_processed_subset.olp.m4'
+
+Next task is to create a graph representation in java (adjacency list) and e.g. explore degree distribution for the smaller dataset. Some intial structure for this is added in src.
 
 #### To do list
 - (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
