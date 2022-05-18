@@ -48,7 +48,7 @@ Identify unique contings
 - ckeck) `cat data/identifiers.olp.m4 | sort | uniq | wc -l # gives 11393435 as expected`
 - step 5) `cat data/identifiers.olp.m4 | sort | uniq > data/identifiers.olp.m4`//
 
-//Correction below not working or relevant//
+//Correction below not working or irrelevant//
 Idea: Replace cotings with integers by looping through "data/identifiers.olp.m4" and for each line:
 `cat data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 | tr line id > data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4; id += 1` 
 Above steps and replacement might also be included in shell script. Maybe last step is to slow because of `cat`.
@@ -56,21 +56,29 @@ Found `sed -i '/old text/ s//new text/g' gigantic_file.sql` om stack exchange wh
 
 #### 220516
 - We conjungture that the graph is sparse and therefore a adjacency list might be apropriate for storage.
-- Above shell scripts for finding number of edges ineffcient (probably due to "print"). We instead use
+- Above shell scripts "count_edges.txt" for finding number of edges ineffcient (probably due to "print"). We instead use
 - `awk '($4 - $3 > 999) && ($7 - $6 > 999)' data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 | wc -l # Number edges is 63 962 895`
-- Conclude that share of potential edges which are actual edges are 63 962 895 / 64 056 772 = 99.85%.
+- Conclude that share of potential edges which are actual edges is 63 962 895 / 64 056 772 = 99.85%.
 
 The following adds line number to each (unique) identifier which corresponds to translating string identifiers into integers
 - To add `nl data/identifiers.olp.m4 > data/identifiers_id.olp.m4`
 
 But problem remains to "replace" the strings in the data with the line numbers from above. Tried with no success
-- `awk 'NR==FNR{a[$2]=$1;next}{$1=a[$1]}1' data/identifiers_id.olp.m4 data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4
+- `awk 'NR==FNR{a[$2]=$1;next}{$1=a[$1]}1' data/identifiers_id.olp.m4 data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4`
+
+#### 220517
+The following script (from yesterday) was actually useful, but when doing tests on smaller files I got confusing results because I hadn't made sure unix line-endings in the files
+- `awk 'NR==FNR{a[$2]=$1;next}{$1=a[$1]}1' data/identifiers_id.olp.m4 data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4`
+- Converting from Windows-style to UNIX-style line endings: https://support.nesi.org.nz/hc/en-gb/articles/218032857-Converting-from-Windows-style-to-UNIX-style-line-endings
+
+#### 220518
+In the shell script "convert_data_to_edges_integer_format.txt" we include all command necessary to to convert raw data into file with only two columns representing edges.
 
 #### To do list
 - (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
 - (220513) Would be nice to create some plots showing (parts of) the graph. It was previously recommended to use Gephi, so maybe come back to that.
-- (220514) "find_edges.txt" produces annoying empty line in end of file. Maybe fix that later. //Not relevant anymore due to corrections 220513//
-- (220515) Put steps in shell script
+- (Done) "find_edges.txt" produces annoying empty line in end of file. Maybe fix that later. //Not relevant anymore due to corrections 220513//
+- (Done) Put steps for processing the raw data in shell script
 - (220516) Need to justify sparsity conjuncture.
  
 #### Misc notes

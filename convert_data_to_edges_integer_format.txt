@@ -1,0 +1,41 @@
+#### Remove columns not used to make file smaler
+awk '{print $1,$2,$6,$7,$8,$10,$11,$12}' data/Spruce_fingerprint_2017-03-10_16.48.olp.m4 > data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4
+
+# Remove file no longer needed (important to have sufficient free space on computer)
+rm data/Spruce_fingerprint_2017-03-10_16.48.olp.m4
+
+#### Identify unique node identifiers
+# Get first and second column in file
+awk '{print $1}' data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 > data/col1.olp.m4
+awk '{print $2}' data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 > data/col2.olp.m4
+
+# Change name and stack second column after first column
+mv data/col1.olp.m4 data/identifiers.olp.m4
+cat data/col2.olp.m4 >> data/identifiers.olp.m4
+rm data/col2.olp.m4
+
+# Get unique and sorted values in the stacked column
+cat data/identifiers.olp.m4 | sort | uniq > data/unique_identifiers.olp.m4
+cat data/unique_identifiers.olp.m4 | wc -l # Gives 11393435 as expected
+rm data/data/identifiers.olp.m4
+
+# Add line number to the unique identifiers
+nl data/unique_identifiers.olp.m4 > data/unique_identifiers_id.olp.m4
+rm data/unique_identifiers.olp.m4
+
+#### Identify edges in integer format
+# Filer edges based on overlap length 1000 in both strings
+awk '($4 - $3 > 999) && ($7 - $6 > 999)' data/Spruce_fingerprint_2017-03-10_16.48_rm_col.olp.m4 > data/edges.olp.m4
+cat data/edges.olp.m4 | wc -l # Number of edges is 63 962 895
+
+# Replace string identifers in first column with inteeger identifiers
+awk 'NR==FNR{a[$2]=$1;next}{$1=a[$1]}1' data/unique_identifiers_id.olp.m4 data/edges.olp.m4 > data/edges_2.olp.m4
+rm data/edges.olp.m4
+
+# Replace string identifers in second column with inteeger identifiers
+awk 'NR==FNR{a[$2]=$1;next}{$2=a[$2]}1' data/unique_identifiers_id.olp.m4 data/edges_2.olp.m4 > data/edges_3.olp.m4
+rm data/edges_2.olp.m4 unique_identifiers_id
+
+# After having filtered edges we only need first and second column
+awk '{print $1,$2}' data/edges_3.olp.m4 > data/edges_processed.olp.m4
+rm data/edges_3.olp.m4
