@@ -79,6 +79,12 @@ We next create a smaller dataset with 10000 elements based on "data/edges_proces
 
 Next task is to create a graph representation in java (adjacency list) and e.g. explore degree distribution for the smaller dataset. Some intial structure for this is added in src.
 
+#### 220519
+- Defined graph class in Java providing an array of linked list.
+- It is possible to add edges to verticies (contings) using method "add_edge"
+- It is now possible to use method "get_size" on the graph with an vertex (contig) as argument to get number of edges connecting to the vertex. This will help us find the node degree distribution.
+- Next we will look into number of component with at least theree vertices.
+
 #### To do list
 - (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
 - (220513) Would be nice to create some plots showing (parts of) the graph. It was previously recommended to use Gephi, so maybe come back to that.

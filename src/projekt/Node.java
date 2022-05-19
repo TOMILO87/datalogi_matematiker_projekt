@@ -1,22 +1,22 @@
 package projekt;
 
-// En nod består av två fält; ett informationsfält och ett adressfält. Informationsfältet är det data som ska sparas.
-// Adressfältet innehåller adressen till nästa nod i listan eller ett speciellt värde, null, om det inte finns fler noder.
+// A node consists of the two fields: An information field and an address field. The information field contains the data to be saved
+// The address field contains the address to the next node in the linked list or a special value, null, if there are no additional nodes
 
 class Node<T> {
 	
-	// 'Attributes
-    private T data; // 'The data type is generic // Informationsfältet
-    public Node<T> next; // 'Adressfältet
+	// Attributes
+    private T data; // Data is of generic type - information field
+    public Node<T> next; // Next is of type Node - address field
     
-    // 'Constructor
+    // Constructor
     public Node(T data) {
-	this.data = data;
-	next = null;
+    	this.data = data;
+    	next = null;
     }
     
-    // 'Method
+    // Method
     public T get_data() {
-	return data;
+    	return data;
     }
 }
