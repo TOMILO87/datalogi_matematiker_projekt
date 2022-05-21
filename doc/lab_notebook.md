@@ -85,6 +85,15 @@ Next task is to create a graph representation in java (adjacency list) and e.g. 
 - It is now possible to use method "get_size" on the graph with an vertex (contig) as argument to get number of edges connecting to the vertex. This will help us find the node degree distribution.
 - Next we will look into number of component with at least theree vertices.
 
+#### 220519
+- Added code for getting neighbors of nodes. Also started working on code for finding components, try to use depth first serach based on pseudo code shown in one of the lecture vidoes.
+
+#### 220520
+- Java code for finding components done.
+- Now print node degree distribution. Further freuency table almost done, need to also get nodes with zeros degree included print though. Intervals based on max value and number bins free parameter (e.g. 10).
+- Also find and print number of compontent and cliques.
+- Above results are for test data. Need to scan conting data and produce the corresponding results, to make sure no effciency issus.
+
 #### To do list
 - (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
 - (220513) Would be nice to create some plots showing (parts of) the graph. It was previously recommended to use Gephi, so maybe come back to that.
