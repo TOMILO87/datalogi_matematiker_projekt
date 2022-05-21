@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 public class Graph {
@@ -119,40 +120,21 @@ public class Graph {
 	}
 	
 	public static void main(String args[]) {
-		//int n = 11393435; // number of contings in the dataset
-		// Want vertex 1 to be at index 0, vertex 2 at index 1 etc.
-		
-		int n = 16; // to run some initial tests
+		int n = 11393435; // number of contings in the dataset
 		Graph g = new Graph(n);
 		
-		// test data
-		g.add_edge(0,1);
-		g.add_edge(1,3);
-		g.add_edge(1,2);
-		g.add_edge(3,2);
-		g.add_edge(3,4);
-		g.add_edge(2,5);
-		g.add_edge(5,4);
-		g.add_edge(6,7);
-		g.add_edge(7,8);
-		g.add_edge(8,6);
-		g.add_edge(2,4);
-		g.add_edge(10,11);
-		g.add_edge(12,13);
-		g.add_edge(12,14);
-		g.add_edge(15,12);
-		g.add_edge(13,15);
-		g.add_edge(15,14);
-		g.add_edge(13,14);
-		
-		//System.out.print(g.get_degree(2) + "\n\n");
-		//for (int i: g.get_neighbors(2)) {
-		//	System.out.print(i + "\n");
-		//}
-		//System.out.print("\n" + g.get_neighbors(2));
-		//System.out.print("\n" + g.get_components());
-		//System.out.print("\n\n" + g.get_components_visited(3));
-		
+		// Read from edges_processed.olp.m4 and add edges to the graph
+		Scanner sc = new Scanner(System.in);
+        while (sc.hasNext()) {
+            String line = sc.nextLine();
+            String[] split_line = line.split(" ");
+            int edge_from = Integer.parseInt(split_line[0]) - 1; // identifier starts with 1 and want to place at position 0 in array
+            int edge_to = Integer.parseInt(split_line[1]) - 1;
+            g.add_edge(edge_from, edge_to);
+        }
+        sc.close();
+        System.out.print("Scanning complete and edges added to graph\n\n");
+        
 		// Find node degree distribution
 		Map<Integer, Integer> freq_count = new HashMap<Integer, Integer>();
 		for (int v: g.get_vertices()) {
@@ -163,38 +145,43 @@ public class Graph {
 			} 
 		}
 		
-		// Divide frequencies into intervals
+		// Assign degree frequencies to intervals
 		int num_intervals = 10;
-		int max_freq = (Collections.max(freq_count.values()));
+		int max_freq = (Collections.max(freq_count.keySet()));
 		float length_interval = (float) max_freq / num_intervals;
 		Map<Float, Integer> interval_count = new HashMap<Float, Integer>();
 		
-		// First each interval has zero elements
 		for (float i=length_interval; i < (max_freq - length_interval); i+=length_interval) {
 			interval_count.put(i, 0);
 		}
 		interval_count.put((float) max_freq, 0);
 		
-		// Assign frequencies to intervals
-		for (int i: freq_count.values()) { // assign frequencies
+		for (int i: freq_count.keySet()) { // assign degrees to intervals
 			float j = length_interval;
 			while (i > j) {
 				j += length_interval;
 				j = Math.min(j,  max_freq);
 			}
-			interval_count.put(j, interval_count.get(j) + 1);
+			if (interval_count.get(j) == null) {
+				interval_count.put(j, freq_count.get(i));
+			} else {
+				interval_count.put(j, interval_count.get(j) + freq_count.get(i));
+			}
 		}
 		
 		// Print frequencies per interval
 		ArrayList<Float> interval_keys = new ArrayList<Float>(interval_count.keySet());
 		Collections.sort(interval_keys);
 		float prev = (float) 0; // for nicer print
-		System.out.print("Interval: Frequency\n");
 		for (float key : interval_keys) {
-			System.out.printf("(%.2f" + "," + "%.2f" + "]: " + interval_count.get(key) + "\n", prev, key);
+			float freq = interval_count.get(key);
+			if (prev == 0) {
+				System.out.printf("[%.2f" + ";" + "%.2f" + "]: " + "%.0f" + "\n", prev, key, freq);
+			} else {
+				System.out.printf("(%.2f" + ";" + "%.2f" + "]: " + "%.0f" + "\n", prev, key, freq);
+			}
 			prev = key;
 		}
-		//System.out.print(freq_count.values() + "\n");
 		
 		// Find number of components and cliques with at least three vertices
 		int component_count = 0;
@@ -224,13 +211,13 @@ public class Graph {
 		}
 		
 		// Print component count and clique count
-		System.out.print("\nComponent count: " + component_count);
-		System.out.print("\nClique count: " + clique_count);
+		System.out.print("\nComponent count (at least three verticies): " + component_count);
+		System.out.print("\nClique count (at least three verticies): " + clique_count);
 		
 		// Print share of components which are cliques
 		if (component_count > 0) {
 			float clique_share =  (float) clique_count / component_count;
-			System.out.print("\nShare cliques: " + clique_share);
+			System.out.print("\nShare cliques: " + clique_share + "\n");
 		}
 	}
 }

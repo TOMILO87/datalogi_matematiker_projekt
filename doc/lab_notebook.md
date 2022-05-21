@@ -85,14 +85,18 @@ Next task is to create a graph representation in java (adjacency list) and e.g. 
 - It is now possible to use method "get_size" on the graph with an vertex (contig) as argument to get number of edges connecting to the vertex. This will help us find the node degree distribution.
 - Next we will look into number of component with at least theree vertices.
 
-#### 220519
+#### 220520
 - Added code for getting neighbors of nodes. Also started working on code for finding components, try to use depth first serach based on pseudo code shown in one of the lecture vidoes.
 
-#### 220520
+#### 220521
 - Java code for finding components done.
 - Now print node degree distribution. Further freuency table almost done, need to also get nodes with zeros degree included print though. Intervals based on max value and number bins free parameter (e.g. 10).
 - Also find and print number of compontent and cliques.
 - Above results are for test data. Need to scan conting data and produce the corresponding results, to make sure no effciency issus.
+
+- Fixed frequency table bug.
+- When analyzing the real dataset it works for 1000000 elements, then run into "Exception in thread "main" java.lang.StackOverflowError" which seems to happen when we are counting components.
+- Also realized that my frequency table with intervals of even size might not be apropriate becuase most nodes have a samll degree and therefore are clustered in bin 1. Might mix.
 
 #### To do list
 - (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
@@ -100,7 +104,8 @@ Next task is to create a graph representation in java (adjacency list) and e.g. 
 - (Done) "find_edges.txt" produces annoying empty line in end of file. Maybe fix that later. //Not relevant anymore due to corrections 220513//
 - (Done) Put steps for processing the raw data in shell script
 - (220516) Need to justify sparsity conjuncture.
- 
+- (220521) Issue with counting components for large dataset, works for 1000000 first lines and is fairly quick otherwise. Also will look in to frequewncy table appareance.
+
 #### Misc notes
 - To store edges and verticies some options are: adjacency list, adjacency matrix. Will consider sparseness to decide which type to store in.
 - If number of edges is proportional to "size" of graph (guess number of nodes) then often seen as spared accroding to lecture note.
