@@ -6,8 +6,8 @@ package projekt;
 class Node<T> {
 	
 	// Attributes
-    private T data; // Data is of generic type - information field
-    public Node<T> next; // Next is of type Node - address field
+	private T data; // Information field
+	public Node<T> next; // Address field
     
     // Constructor
     public Node(T data) {

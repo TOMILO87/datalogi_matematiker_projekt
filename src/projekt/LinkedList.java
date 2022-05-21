@@ -42,6 +42,19 @@ class LinkedList<E> implements Iterable<E> { // E - Element c.f. T which is any 
     	return counter;
     }
     
+    // Gives data for the nodes in the linked list in an array
+    public Node<E>[] get_nodes() {
+    	int n = this.get_size();
+    	Node<E>[] arr = new Node[n];
+    	Node<E> current = head;
+    	
+    	for (int i=0; i<n; i++) {
+    		arr[i] = current;
+    	    current = current.next;
+    	}
+    	return arr;
+    }
+    
     // Required this method for class iterable 
     public Iterator<E> iterator() {
     	return new ListIterator();
