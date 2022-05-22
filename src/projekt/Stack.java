@@ -8,7 +8,7 @@ public class Stack {
 	
 	// Constructor
 	public Stack() {
-		intArr = new int[1000];
+		intArr = new int[70000000];
 		sizeArr = 0;
 	}
 	
@@ -26,10 +26,11 @@ public class Stack {
 	
 	// Add element to the stack
 	public void push(int x) throws Exception {
-		if (sizeArr < 1000) {
+		if (sizeArr < 70000000) {
 			intArr[sizeArr] = x;
 			sizeArr++;
 		} else {
+			System.out.println(intArr[sizeArr-1]);
 			throw new Exception("Stack is full!");
 		}
 	}

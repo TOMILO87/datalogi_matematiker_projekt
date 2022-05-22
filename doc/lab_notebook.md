@@ -96,7 +96,7 @@ Next task is to create a graph representation in java (adjacency list) and e.g. 
 
 - Fixed frequency table bug.
 - When analyzing the real dataset it works for 1000000 elements, then when analyzing whole datset run into "Exception in thread "main" java.lang.StackOverflowError" which seems to happen when we are counting components.
-- Also realized that my frequency table with intervals of even size might not be apropriate becuase most nodes have a samll degree and therefore are clustered in bin 1. Might mix.
+- Also realized that my frequency table with intervals of even size might not be apropriate becuase most nodes have a small degree and therefore are clustered in bin 1. I might mix in a later version.
 
 - Tried to fix "Exception in thread "main" java.lang.OutOfMemoryError: Java heap space: failed reallocation of scalar replaced objects". After some reserch I found that thet I probably do not use maximum RAM in my Virtual Machine (Ubuntu on Windows).
 - This site provided more information and a soultion https://medium.com/@hwimalasiri/how-to-increase-maximum-heap-size-of-jvm-in-ubuntu-e836b15284eb:
@@ -114,22 +114,21 @@ Next task is to create a graph representation in java (adjacency list) and e.g. 
 - So we will need to avoid going too deep into the recursion, or maybe I can increase the stack size on the virtual machine similar to what we did for the heap causing the "java.lang.OutOfMemoryError:".
 - The following command gives the stack size `ulimit -a` "Inside Ubuntu". Result is "stack size (kbytes, -s) 8192".
 - We try to increase the stack size. This post https://askubuntu.com/a/319159/1595503 suggests the command 'ulimit -s 16000'. Indeed we get stack size (kbytes, -s) 16000".
-- Also after increasing stack size to 16000 still get "StackOverflowError". Get the same result when increasing to 100000 as well so seems not to be the solution.
+- Also after increasing stack size to 16000 still get "StackOverflowError". Get the same result when increasing to 5000000 as well so seems not to be the solution.
 
 Since the recursion depth seems to be the problem we will instead implement an iterative depth search first:
 - Based on the following post: https://www.geeksforgeeks.org/iterative-depth-first-traversal/ and using a modified version of the stack from Lab 2 we now can get component for each vertex seperatly without using recursion.
-
-Left to do:
-- Check that the iterative depth first work for the whole dataset and also clean up code which. Then report.
+- Still run into some error becuase the stack is of too small size but since we defined the Stack class ourselves we may easily adjust the stack size to a very large number which solves the problem.
+- We check then check the iterative depth work for the whole dataset using `cat data/edges_processed.olp.m4 | java -jar Graph.jar` (it is slow but works) and also clean up code.
 
 #### To do list
 - (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.
-- (220513) Would be nice to create some plots showing (parts of) the graph. It was previously recommended to use Gephi, so maybe come back to that.
+- (-) Would be nice to create some plots showing (parts of) the graph. It was previously recommended to use Gephi, so maybe come back to that.
 - (Done) "find_edges.txt" produces annoying empty line in end of file. Maybe fix that later. //Not relevant anymore due to corrections 220513//
 - (Done) Put steps for processing the raw data in shell script
-- (220516) Need to justify sparsity conjuncture.
-- (220521) Issue with counting components for large dataset, works for 1000000 first lines and is fairly quick otherwise. Also will look in to frequewncy table appareance.
+- (Done) Need to justify sparsity conjuncture.
+- (-) Issue with counting components for large dataset, works for 1000000 first lines and is fairly quick otherwise. Also will look in to frequewncy table appareance.
 
 #### Misc notes
 - To store edges and verticies some options are: adjacency list, adjacency matrix. Will consider sparseness to decide which type to store in.
-- If number of edges is proportional to "size" of graph (guess number of nodes) then often seen as spared accroding to lecture note.
+- If number of edges is proportional to "size" of graph (guess number of nodes) then often seen as sparse accroding to lecture note.

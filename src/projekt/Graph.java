@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class Graph {
 	// Attributes
-	private LinkedList<Integer>[] vertices ; // Each index in the array represents a vertex (conting) and the linked lists the edges 
+	private LinkedList<Integer>[] vertices ; // Each index in the array represents a vertex (contig) and the linked lists the edges 
 	private int num_vertices; // Number of vertices in the graph
 	private boolean[] visited; // Visited nodes, used for finding components in the graph 
 		
@@ -105,7 +105,7 @@ public class Graph {
 	 * Output: S - an HashSet representing the component of vertex id
 	 */
 	public HashSet<Integer> get_component_iter(int id) throws Exception {
-		// 
+		// Stack is used for keeping track of vertices to check for neighbors
 		Stack stack = new Stack();
 		HashSet<Integer> S = new HashSet<Integer>();
 		
@@ -115,9 +115,9 @@ public class Graph {
 		}
 		
 		stack.push(id);
-		
 		while (stack.is_empty() == false) {
-			id = stack.pop();
+			id = stack.peek();
+			stack.pop();
 			
 			if (visited[id] == false) {
 				S.add(id);
@@ -155,8 +155,7 @@ public class Graph {
 	
 	public static void main(String args[]) throws Exception {
 		long checkpoints[] = new long[5]; // To store timestamps in
-		//int n = 11393435; // number of contings in the dataset
-		int n = 16; // number of contings in the dataset
+		int n = 11393435; // number of contigs in the dataset
 		Graph g = new Graph(n);
 		
 		// Read from edges_processed.olp.m4 and add edges to the graph
@@ -228,7 +227,24 @@ public class Graph {
 		int component_count = 0;
 		int clique_count = 0;
 		
-		for (HashSet c: g.get_components()) {
+		// We use iterative version of DFS to analyze large data set
+		HashSet<Integer> checked_component = new HashSet<Integer>();
+		ArrayList<HashSet<Integer>> components = new ArrayList<HashSet<Integer>>();
+		HashSet<Integer> S = new HashSet<Integer>();
+		
+		for (int v: g.get_vertices()) {
+			//if (v % 20000 == 0) { // to keep track of progress
+        	//	System.out.print(v + "\n");
+        	//}
+			if (checked_component.contains(v) == false) {
+				S = g.get_component_iter(v);
+	        	checked_component.addAll(S);
+	        	components.add(S);
+			}
+        }
+		
+		//for (HashSet c: g.get_components()) { // this uses the recursive version of DFS
+		for (HashSet c: components) {
 			int m=c.size();
 			
 			// Count components with at least three vertices
@@ -260,21 +276,15 @@ public class Graph {
 			float clique_share =  (float) clique_count / component_count;
 			System.out.print("\nShare cliques: " + clique_share + "\n\n");
 		}
-		
-		checkpoints[4] = System.currentTimeMillis();
+        checkpoints[4] = System.currentTimeMillis();
 		
 		// Check timing for calculations
-		String algs[] = {"", "Create graph", "Calcualte degree distribution", "Create histogram",
+		String algs[] = {"", "Create graph", "Calculate degree distribution", "Create histogram",
 				"Count components and cliques"};
         // Output timing results
         for (int i=1; i<5; i++) {
             System.out.format("Time for task %s: %d ms", algs[i], checkpoints[i] - checkpoints[i-1]);
             System.out.println();
-        }
-        
-        
-        for (int v: g.get_vertices()) {
-        	System.out.println(g.get_component_iter(v) + "\n");
         }
 	}
 }
