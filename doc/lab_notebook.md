@@ -95,8 +95,32 @@ Next task is to create a graph representation in java (adjacency list) and e.g. 
 - Above results are for test data. Need to scan conting data and produce the corresponding results, to make sure no effciency issus.
 
 - Fixed frequency table bug.
-- When analyzing the real dataset it works for 1000000 elements, then run into "Exception in thread "main" java.lang.StackOverflowError" which seems to happen when we are counting components.
+- When analyzing the real dataset it works for 1000000 elements, then when analyzing whole datset run into "Exception in thread "main" java.lang.StackOverflowError" which seems to happen when we are counting components.
 - Also realized that my frequency table with intervals of even size might not be apropriate becuase most nodes have a samll degree and therefore are clustered in bin 1. Might mix.
+
+- Tried to fix "Exception in thread "main" java.lang.OutOfMemoryError: Java heap space: failed reallocation of scalar replaced objects". After some reserch I found that thet I probably do not use maximum RAM in my Virtual Machine (Ubuntu on Windows).
+- This site provided more information and a soultion https://medium.com/@hwimalasiri/how-to-increase-maximum-heap-size-of-jvm-in-ubuntu-e836b15284eb:
+- When running `java -XshowSettings:vm` I got result "VM settings: Max. Heap Size (Estimated): 3.10G Using VM: OpenJDK 64-Bit Server VM".
+- Then using the command `export _JAVA_OPTIONS=-Xmx6000m` (6000 for 6 GB) we get  "VM settings: Max. Heap Size (Estimated): 5.86G Using VM: OpenJDK 64-Bit Server VM". Then it works. Says "Picked up _JAVA_OPTIONS: -Xmx6000m" when running other commands.
+
+#### 220522
+- Next error we get (when analyzing beyond about 1200000 lines), for e.g. `head -1500000 data/edges_processed.olp.m4 | java -jar Graph.jar`, is "Exception in thread "main" java.lang.StackOverflowError".
+- The above error message further refers to "projekt.Graph.get_components_visited(Graph.java:112)" and seems to have to do with the help function for depth first serach.
+- We suspect that the error has to do with us storing too many components, where compoents elements are stored in HashSets, inside an array.
+- We have two ideas how to fix it. Either use something simialr to Pythons "yield" keyword and return componetns recursively. Or we may simply count number of components and cliques without keping track of the actual elements.
+
+- Related to "java.lang.StackOverflowError" I found this post on stack overflow: https://stackoverflow.com/a/47831474/5733571
+- The above post says: "The error java.lang.StackOverflowError is thrown to indicate that the application’s stack was exhausted, due to deep recursion i.e your program/script recurses too deeply."
+- So we will need to avoid going too deep into the recursion, or maybe I can increase the stack size on the virtual machine similar to what we did for the heap causing the "java.lang.OutOfMemoryError:".
+- The following command gives the stack size `ulimit -a` "Inside Ubuntu". Result is "stack size (kbytes, -s) 8192".
+- We try to increase the stack size. This post https://askubuntu.com/a/319159/1595503 suggests the command 'ulimit -s 16000'. Indeed we get stack size (kbytes, -s) 16000".
+- Also after increasing stack size to 16000 still get "StackOverflowError". Get the same result when increasing to 100000 as well so seems not to be the solution.
+
+Since the recursion depth seems to be the problem we will instead implement an iterative depth search first:
+- Based on the following post: https://www.geeksforgeeks.org/iterative-depth-first-traversal/ and using a modified version of the stack from Lab 2 we now can get component for each vertex seperatly without using recursion.
+
+Left to do:
+- Check that the iterative depth first work for the whole dataset and also clean up code which. Then report.
 
 #### To do list
 - (Done) Data should contain 11393435 contings. I should later check that this is indeed number of unique identifers.

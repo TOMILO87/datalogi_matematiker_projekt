@@ -77,7 +77,7 @@ public class Graph {
 	}
 	
 	/*
-	 * Get all components in the graph using depth first search (DFS)
+	 * Get all components in the graph using recursive depth first search (DFS)
 	 * Output: arrLst - an ArrayList containing Hashsets representing components of the graph 
 	 */
 	public ArrayList<HashSet<Integer>> get_components() {
@@ -99,9 +99,43 @@ public class Graph {
 		return arrLst;
 	}
 	
+	/*
+	 * Get the component of a vertex using iterative depth first search (DFS)
+	 * Input: id - vertex identifier 
+	 * Output: S - an HashSet representing the component of vertex id
+	 */
+	public HashSet<Integer> get_component_iter(int id) throws Exception {
+		// 
+		Stack stack = new Stack();
+		HashSet<Integer> S = new HashSet<Integer>();
+		
+		// Initially no nodes visited
+		for (int v=0; v < num_vertices; v++) {
+			visited[v] = false;
+		}
+		
+		stack.push(id);
+		
+		while (stack.is_empty() == false) {
+			id = stack.pop();
+			
+			if (visited[id] == false) {
+				S.add(id);
+				visited[id] = true;
+			}
+			
+			for (int u: get_neighbors(id)) {
+				if (visited[u] == false) {
+					stack.push(u);
+				}
+			}
+		}
+		return S;
+	}
+	
 	// Private methods
 	/*
-	 * Helper function to get_components(v) 
+	 * Helper function to get_components() 
 	 */
 	private HashSet<Integer> get_components_visited(int v) {
 		visited[v] = true;
@@ -119,11 +153,14 @@ public class Graph {
 		return S;
 	}
 	
-	public static void main(String args[]) {
-		int n = 11393435; // number of contings in the dataset
+	public static void main(String args[]) throws Exception {
+		long checkpoints[] = new long[5]; // To store timestamps in
+		//int n = 11393435; // number of contings in the dataset
+		int n = 16; // number of contings in the dataset
 		Graph g = new Graph(n);
 		
 		// Read from edges_processed.olp.m4 and add edges to the graph
+		checkpoints[0] = System.currentTimeMillis();
 		Scanner sc = new Scanner(System.in);
         while (sc.hasNext()) {
             String line = sc.nextLine();
@@ -134,6 +171,7 @@ public class Graph {
         }
         sc.close();
         System.out.print("Scanning complete and edges added to graph\n\n");
+        checkpoints[1] = System.currentTimeMillis();
         
 		// Find node degree distribution
 		Map<Integer, Integer> freq_count = new HashMap<Integer, Integer>();
@@ -144,6 +182,7 @@ public class Graph {
 				freq_count.put(g.get_degree(v), freq_count.get(g.get_degree(v)) + 1);
 			} 
 		}
+		checkpoints[2] = System.currentTimeMillis();
 		
 		// Assign degree frequencies to intervals
 		int num_intervals = 10;
@@ -182,6 +221,8 @@ public class Graph {
 			}
 			prev = key;
 		}
+		checkpoints[3] = System.currentTimeMillis();
+		
 		
 		// Find number of components and cliques with at least three vertices
 		int component_count = 0;
@@ -217,8 +258,24 @@ public class Graph {
 		// Print share of components which are cliques
 		if (component_count > 0) {
 			float clique_share =  (float) clique_count / component_count;
-			System.out.print("\nShare cliques: " + clique_share + "\n");
+			System.out.print("\nShare cliques: " + clique_share + "\n\n");
 		}
+		
+		checkpoints[4] = System.currentTimeMillis();
+		
+		// Check timing for calculations
+		String algs[] = {"", "Create graph", "Calcualte degree distribution", "Create histogram",
+				"Count components and cliques"};
+        // Output timing results
+        for (int i=1; i<5; i++) {
+            System.out.format("Time for task %s: %d ms", algs[i], checkpoints[i] - checkpoints[i-1]);
+            System.out.println();
+        }
+        
+        
+        for (int v: g.get_vertices()) {
+        	System.out.println(g.get_component_iter(v) + "\n");
+        }
 	}
 }
 
